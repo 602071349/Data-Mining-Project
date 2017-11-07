@@ -1,0 +1,1040 @@
+---
+title: "MA615 Worldwide Ocean Project"
+author: "Team 4: Shuyi Jiang, Jiazhou Liu, Shan Shan, Yihe Tang"
+date: "11/6/2017"
+output: pdf_document
+---
+
+# Region Name: 4
+
+# List of Sources with URLs
+
+###Station 46002 (LLNR 765.1) - WEST OREGON - 275NM West of Coos Bay, OR
+###http://www.ndbc.noaa.gov/station_history.php?station=46002
+###Station 46028 (LLNR 275) - CAPE SAN MARTIN - 55NM West NW of Morro Bay, CA
+###http://www.ndbc.noaa.gov/station_history.php?station=46028
+###Station 46089 (LLNR 689) - TILLAMOOK, OR - 85 NM WNW of Tillamook, OR
+###http://www.ndbc.noaa.gov/station_history.php?station=46089
+
+# Overview and Summary:
+### Report on the condition of the data and any interesting detail
+### Discuss the data acquisition, selection of buoys or ships
+### Density of data
+
+We carried our data collection of the National Data Buoy Center's Worldwide Ocean Temperature via three locations in North America: #406002, #46028 and #46089, respectively, from 2005 to 2016, within twelve-year span. The baseline and collected factors are: date and time (YYYY-MM-HH-DD), air temperature (ATMP) and water temperature (WTMP) to meet the research goal. In regards to the data per se: the obtained total valid observations are 10839. In addition, the twelve years’ water temperature range is 9.6 &deg;C, with the mean of 13.6 &deg;C; the air temperature range is 15.2&deg;C with the mean value of 12.50&deg;C. For the density of fluctuations, our EDA analysis presents the “noises” regionally and seasonally. The detailed discussions are listed in the body paragraph as follows.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning=FALSE)
+```
+
+```{r}
+library(foreign)
+library(ggplot2)
+library(car)
+library(MASS)
+library(arm)
+library(dplyr)
+library(tidyverse)
+library(ggmap)
+library(readr)
+```
+
+#Point 46028 Data Cleaning 
+
+```{r}
+data <- readLines("46028h2005.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2005028 <- read.fwf(textConnection(df), widths=c(14,5,5))
+names(data.clean2005028) <- c("YYMMDDHH", "WTMP","ATMP")
+
+
+```
+
+```{r}
+data <- readLines("46028h2006.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2006028 <- read.fwf(textConnection(df), widths=c(14,5,5))
+names(data.clean2006028) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46028h2007.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2007028 <- read.fwf(textConnection(df), widths=c(14,5,5))
+names(data.clean2007028) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46028h2008.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2008028 <- read.fwf(textConnection(df), widths=c(14,5,5))
+names(data.clean2008028) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46028h2009.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 66, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2009028 <- read.fwf(textConnection(df), widths=c(14,6,5))
+names(data.clean2009028) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46028h2010.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 66, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2010028 <- read.fwf(textConnection(df), widths=c(14,5,5))
+names(data.clean2010028) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46028h2011.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 66, 70), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2011028 <- read.fwf(textConnection(df), widths=c(14,5,5))
+names(data.clean2011028) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46028h2012.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2012028 <- read.fwf(textConnection(df), widths=c(14,4,5))
+names(data.clean2012028) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46028h2013.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2013028 <- read.fwf(textConnection(df), widths=c(14,4,5))
+names(data.clean2013028) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46028h2014.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2014028 <- read.fwf(textConnection(df), widths=c(14,4,5))
+names(data.clean2014028) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46028h2015.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 14), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2015028 <- read.fwf(textConnection(df), widths=c(14,5,5))
+names(data.clean2015028) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46028h2016.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2016028 <- read.fwf(textConnection(df), widths=c(14,4,5))
+names(data.clean2016028) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data.clean46028 <- rbind(data.clean2005028, data.clean2006028, data.clean2007028,
+                         data.clean2008028, data.clean2009028, data.clean2010028,
+                         data.clean2011028, data.clean2012028, data.clean2013028,
+                         data.clean2014028, data.clean2015028, data.clean2016028)
+```
+
+```{r}
+data46028 <- filter(data.clean46028, substr(data.clean46028$YYMMDDHH,12,13)=="12" )
+```
+
+```{r}
+data46028$region <- 4
+data46028$typereading <- "buoy"
+data46028$lat <- "35.712 N"
+data46028$lon <- "121.858 W"
+data46028$timediff <- "+/- 0"
+```
+
+```{r}
+data <- data46028[c("region", "typereading", "timediff", "YYMMDDHH",
+                    "lat","lon", "WTMP", "ATMP")]
+```
+
+```{r}
+data2005028 <- filter(data, substr(YYMMDDHH,1,4)==2005)
+data2006028 <- filter(data, substr(YYMMDDHH,1,4)==2006)
+data2007028 <- filter(data, substr(YYMMDDHH,1,4)==2007)
+data2008028 <- filter(data, substr(YYMMDDHH,1,4)==2008)
+data2009028 <- filter(data, substr(YYMMDDHH,1,4)==2009)
+data2010028 <- filter(data, substr(YYMMDDHH,1,4)==2010)
+data2011028 <- filter(data, substr(YYMMDDHH,1,4)==2011)
+data2012028 <- filter(data, substr(YYMMDDHH,1,4)==2012)
+data2013028 <- filter(data, substr(YYMMDDHH,1,4)==2013)
+data2014028 <- filter(data, substr(YYMMDDHH,1,4)==2014)
+data2015028 <- filter(data, substr(YYMMDDHH,1,4)==2015)
+data2016028 <- filter(data, substr(YYMMDDHH,1,4)==2016)
+```
+
+```{r}
+data2005028$year <- 2005
+data2006028$year <- 2006
+data2007028$year <- 2007
+data2008028$year <- 2008
+data2009028$year <- 2009
+data2010028$year <- 2010
+data2011028$year <- 2011
+data2012028$year <- 2012
+data2013028$year <- 2013
+data2014028$year <- 2014
+data2015028$year <- 2015
+data2016028$year <- 2016
+```
+
+```{r}
+data28 <- rbind(data2005028,data2006028,data2007028,
+                data2008028,data2009028,data2010028,
+                data2011028,data2012028,data2013028,
+                data2014028,data2015028,data2016028)
+```
+
+```{r}
+data028 <- filter(data28, WTMP != 99.0 & ATMP !=99.0)
+data028 <- filter(data028, WTMP != 999.0 & ATMP != 999.0)
+data028 <- filter(data028, WTMP != 0 & ATMP != 0)
+```
+Point 46028 Data Cleaning Finished, chart finished
+
+#Point 46089 Data Cleaning
+
+```{r}
+data <- readLines("46089h2005.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2005089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2005089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+
+```{r}
+data <- readLines("46089h2006.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2006089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2006089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46089h2007.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2007089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2007089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46089h2008.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2008089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2008089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46089h2009.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2009089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2009089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46089h2010.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2010089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2010089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46089h2011.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2011089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2011089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46089h2012.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2012089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2012089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46089h2013.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2013089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2013089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46089h2014.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2014089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2014089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46089h2015.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2015089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2015089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+
+```{r}
+data <- readLines("46089h2016.txt")
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61, 65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2016089 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2016089) <- c("YYMMDDHH", "WTMP","ATMP")
+```
+# Txt files reading finished
+# Join two data frames (datasets) vertically, use the rbind function for data frame combination. 
+
+```{r}
+data46089 <- rbind(data.clean2005089,data.clean2006089,data.clean2007089,
+                   data.clean2008089,data.clean2009089,data.clean2010089, 
+                   data.clean2011089, data.clean2012089, data.clean2013089,
+                   data.clean2014089, data.clean2015089,data.clean2016089)
+```
+
+# Filter data point at 12 o'clock
+```{r}
+data46089 <- filter(data46089, substr(data46089$YYMMDDHH,12,13)=="12" )
+```
+
+#Add columns
+```{r}
+data46089$region <- 4
+data46089$typereading <- "buoy"
+data46089$lat <- "35.712 N"
+data46089$lon <- "121.858 W"
+data46089$timediff <- "+/- 0"
+```
+
+```{r}
+data <- data46089[c("region", "typereading", "timediff", "YYMMDDHH",
+                    "lat","lon", "WTMP", "ATMP")]
+```
+
+#Split By Year
+```{r}
+data2005089 <- filter(data, substr(YYMMDDHH,1,4)==2005)
+data2006089 <- filter(data, substr(YYMMDDHH,1,4)==2006)
+data2007089 <- filter(data, substr(YYMMDDHH,1,4)==2007)
+data2008089 <- filter(data, substr(YYMMDDHH,1,4)==2008)
+data2009089 <- filter(data, substr(YYMMDDHH,1,4)==2009)
+data2010089 <- filter(data, substr(YYMMDDHH,1,4)==2010)
+data2011089 <- filter(data, substr(YYMMDDHH,1,4)==2011)
+data2012089 <- filter(data, substr(YYMMDDHH,1,4)==2012)
+data2013089 <- filter(data, substr(YYMMDDHH,1,4)==2013)
+data2014089 <- filter(data, substr(YYMMDDHH,1,4)==2014)
+data2015089 <- filter(data, substr(YYMMDDHH,1,4)==2015)
+data2016089 <- filter(data, substr(YYMMDDHH,1,4)==2016)
+```
+#Add "year" Column
+```{r}
+data2005089$year <- 2005
+data2006089$year <- 2006
+data2007089$year <- 2007
+data2008089$year <- 2008
+data2009089$year <- 2009
+data2010089$year <- 2010
+data2011089$year <- 2011
+data2012089$year <- 2012
+data2013089$year <- 2013
+data2014089$year <- 2014
+data2015089$year <- 2015
+data2016089$year <- 2016
+```
+
+```{r}
+data46089 <- rbind(data2005089,data2006089,data2007089,
+                   data2008089,data2009089,data2010089,
+                   data2011089,data2012089,data2013089,
+                   data2014089,data2015089,data2016089)
+```
+
+```{r}
+data089 <- filter(data46089, WTMP != 99.0 & ATMP !=99.0)
+data089 <- filter(data089, WTMP != 999.0 & ATMP != 999.0)
+data089 <- filter(data089, WTMP != 0 & ATMP != 0)
+```
+Point 46089 Data Cleaning and Chart Finished
+
+#Point 46002 Data Cleaning
+```{r}
+#read data files from 2005-2016 at point 46002 
+data<-readLines("46002h2005.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61,65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2005002 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2005002) <- c("YYMMDDHH","WTMP","ATMP")
+```
+
+```{r}
+data<-readLines("46002h2006.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61,65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2006002 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2006002) <- c("YYMMDDHH","WTMP","ATMP")
+```
+
+```{r}
+data<-readLines("46002h2007.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61,65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2007002 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2007002) <- c("YYMMDDHH","WTMP","ATMP")
+```
+
+```{r}
+data<-readLines("46002h2008.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61,65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2008002 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2008002) <- c("YYMMDDHH","WTMP","ATMP")
+```
+
+```{r}
+data<-readLines("46002h2009.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61,65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2009002 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2009002) <- c("YYMMDDHH","WTMP","ATMP")
+```
+
+```{r}
+data<-readLines("46002h2011.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61,65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2011002 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2011002) <- c("YYMMDDHH","WTMP","ATMP")
+```
+
+```{r}
+data<-readLines("46002h2012.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61,65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2012002 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2012002) <- c("YYMMDDHH","WTMP","ATMP")
+```
+
+```{r}
+data<-readLines("46002h2013.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61,65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2013002 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2013002) <- c("YYMMDDHH","WTMP","ATMP")
+```
+
+```{r}
+data<-readLines("46002h2014.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61,65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2014002 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2014002) <- c("YYMMDDHH","WTMP","ATMP")
+```
+
+```{r}
+data<-readLines("46002h2015.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61,65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2015002 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2015002) <- c("YYMMDDHH","WTMP","ATMP")
+```
+
+```{r}
+data<-readLines("46002h2016.txt")
+
+df <- NULL
+for (i in 2:length(data)) {
+  tmp <- data[i]
+  subtmp <- paste0(substr(tmp, 1, 13), substr(tmp, 67, 71), substr(tmp, 61,65))
+  df <- rbind(df, subtmp)
+}
+
+data.clean2016002 <- read.fwf(textConnection(df), widths=c(13,5,5))
+names(data.clean2016002) <- c("YYMMDDHH","WTMP","ATMP")
+```
+
+```{r}
+#bind data files together and add required columns;also we select data only at 12pm
+data46002=rbind(data.clean2005002,data.clean2006002,data.clean2007002,
+                data.clean2008002,data.clean2009002,data.clean2011002,
+                data.clean2012002,data.clean2013002,data.clean2014002,
+                data.clean2015002,data.clean2016002,by=c("YYDDMMHH","WTMP","ATMP"))
+data46002=data46002%>%
+  filter(substr(data46002$YYMMDDHH,12,13)=="12")
+
+data46002$region<-4
+data46002$typereading<-"buoy"
+data46002$lat<-"42.612N"
+data46002$lon<-"130.537W"
+data46002$timediff<-"+/- 0"
+data<-data46002[c("region","typereading","timediff","YYMMDDHH",
+                  "lat","lon","WTMP","ATMP")]
+#clean data by removing missing values
+data <- filter(data, WTMP != 99.0 & ATMP !=99.0)
+data <- filter(data, WTMP != 999.0 & ATMP != 999)
+data <- filter(data, WTMP != 0 & ATMP != 0)
+```
+```{r}
+#select data for each year
+data2005002 <- filter(data, substr(YYMMDDHH,1,4)==2005)
+data2006002 <- filter(data, substr(YYMMDDHH,1,4)==2006)
+data2007002 <- filter(data, substr(YYMMDDHH,1,4)==2007)
+data2008002 <- filter(data, substr(YYMMDDHH,1,4)==2008)
+data2009002 <- filter(data, substr(YYMMDDHH,1,4)==2009)
+data2011002 <- filter(data, substr(YYMMDDHH,1,4)==2011)
+data2012002 <- filter(data, substr(YYMMDDHH,1,4)==2012)
+data2013002 <- filter(data, substr(YYMMDDHH,1,4)==2013)
+data2014002 <- filter(data, substr(YYMMDDHH,1,4)==2014)
+data2015002 <- filter(data, substr(YYMMDDHH,1,4)==2015)
+data2016002 <- filter(data, substr(YYMMDDHH,1,4)==2016)
+```
+
+```{r}
+#add an extra year column
+data2005002$year <- 2005
+data2006002$year <- 2006
+data2007002$year <- 2007
+data2008002$year <- 2008
+data2009002$year <- 2009
+data2011002$year <- 2011
+data2012002$year <- 2012
+data2013002$year <- 2013
+data2014002$year <- 2014
+data2015002$year <- 2015
+data2016002$year <- 2016
+```
+
+```{r}
+#rebind data together
+data002 <- rbind(data2005002,data2006002,data2007002,
+                 data2008002,data2009002,data2011002,
+                 data2012002,data2013002,data2014002,
+                 data2015002,data2016002)
+```
+
+#46028 EDA
+Data Density
+```{r}
+ggplot(data = data028, aes(x=year, y=WTMP)) + geom_bar(stat = "identity") + 
+  labs(title="Volume of Sea Temperature Sample by Year",
+       y="Volume of Sample", x="Year")
+```
+
+```{r}
+ggplot(data = data028, aes(x=year, y=ATMP)) + geom_bar(stat = "identity") + 
+  labs(title="Volume of Air Temperature Sample by Year",
+       y="Volume of Sample", x="Year")
+```
+
+```{r}
+#Five Points Summary of Sea Temperature From 2005 To 2016 at Point 46028
+summary(data028$WTMP)
+```
+```{r}
+#Table that shows the summary of Sea Temperature for each year
+wtmp<- data.frame(matrix(ncol =6, nrow =12))
+colnames(wtmp) <- paste0(c("Min","1st Qu","Median","Mean","3rd Qu","Max"), c(1:6))
+wtmp[1,]=summary(as.numeric(data2005028$WTMP))
+wtmp[2,]=summary(as.numeric(data2006028$WTMP))
+wtmp[3,]=summary(as.numeric(data2007028$WTMP))
+wtmp[4,]=summary(as.numeric(data2008028$WTMP))
+wtmp[5,]=summary(as.numeric(data2009028$WTMP))
+wtmp[6,]=summary(as.numeric(data2010028$WTMP))
+wtmp[7,]=summary(as.numeric(data2011028$WTMP))
+wtmp[8,]=summary(as.numeric(data2012028$WTMP))
+wtmp[9,]=summary(as.numeric(data2013028$WTMP))
+wtmp[10,]=summary(as.numeric(data2014028$WTMP))
+wtmp[11,]=summary(as.numeric(data2015028$WTMP))
+wtmp[12,]=summary(as.numeric(data2016028$WTMP))
+wtmp$year<-c(2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016)
+wtmp<-wtmp[c(7,1,2,3,4,5,6)]
+wtmp
+```
+
+
+```{r}
+#Boxplot of Sea Temperature from 2005 to 2016 at Point 46028
+ggplot(data028,aes(x=year, y=WTMP,group=year, fill=year))+geom_boxplot() +
+  labs(title="Sea Temperature from 2005 to 2016 at Point 46028",
+       y="Sea Temperature", x="Year")
+```
+Year 2015 has seen the highest sea temperature compare to other years.
+```{r}
+#Five Points Summary of Air Temperature From 2005 To 2016 at Point 46028
+summary(data028$ATMP)
+```
+```{r}
+#Table that shows the summary of Air Temperature for each year
+atmp<- data.frame(matrix(ncol =6, nrow =12))
+colnames(atmp) <- paste0(c("Min","1st Qu","Median","Mean","3rd Qu","Max"), c(1:6))
+atmp[1,]=summary(as.numeric(data2005028$ATMP))
+atmp[2,]=summary(as.numeric(data2006028$ATMP))
+atmp[3,]=summary(as.numeric(data2007028$ATMP))
+atmp[4,]=summary(as.numeric(data2008028$ATMP))
+atmp[5,]=summary(as.numeric(data2009028$ATMP))
+atmp[6,]=summary(as.numeric(data2010028$ATMP))
+atmp[7,]=summary(as.numeric(data2011028$ATMP))
+atmp[8,]=summary(as.numeric(data2012028$ATMP))
+atmp[9,]=summary(as.numeric(data2013028$ATMP))
+atmp[10,]=summary(as.numeric(data2014028$ATMP))
+atmp[11,]=summary(as.numeric(data2015028$ATMP))
+atmp[12,]=summary(as.numeric(data2016028$ATMP))
+atmp$year<-c(2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016)
+atmp<-atmp[c(7,1,2,3,4,5,6)]
+atmp
+```
+
+```{r}
+#Boxplot of Air Temperature from 2005 to 2016 at Point 46028
+ggplot(data028,aes(x=year, y=ATMP,group=year, fill=year))+geom_boxplot() +
+  labs(title="Air Temperature from 2005 to 2016 at Point 46028",
+       y="Aea Temperature", x="Year")
+```
+Year 2015 has seen the highest air temperature, and the tendency is similar to the sea temperature graph. 
+```{r}
+#Lineplot of Air temperatue from 2005 to 2016 at Point 46028
+ggplot(data028,aes(x=as.numeric(row.names(data028)),y=as.numeric(ATMP)))+
+  geom_line()+labs(title="Air Temperature from 2005 to 2016 at Point 46028",
+                   y="Air Temperature", x="Days")
+```
+Air temperature from 2005 to 2016 at point 46028 slightly rised. 
+```{r}
+#Lineplot of Sea Temperatue from 2005 to 2016 at Point 46028
+ggplot(data028,aes(x=as.numeric(row.names(data028)),y=as.numeric(WTMP)))+
+  geom_line()+labs(title="Sea Temperature from 2005 to 2016 at Point 46028", 
+                   y="Sea Temperature", x="Days")
+```
+Sea temperature from 2005 to 2016 slightly rised in the last couple of years.
+#EDA of Point 46089
+Data Density
+```{r}
+ggplot(data = data089, aes(x=year, y=WTMP)) + geom_bar(stat = "identity") + 
+  labs(title="Volume of Sea Temperature Sample by Year",
+       y="Volume of Sample", x="Year")
+```
+
+```{r}
+ggplot(data = data089, aes(x=year, y=ATMP)) + geom_bar(stat = "identity") + 
+  labs(title="Volume of Air Temperature Sample by Year", 
+       y="Volume of Sample", x="Year")
+```
+Year 2006, 2007, and 2008 have much less data than other years.
+```{r}
+#Five Points Summary of Sea Temperature From 2005 To 2016 at Point 46089
+summary(data089$WTMP)
+```
+
+```{r}
+#Table that shows the summary of Sea Temperature for each year
+wtmp<- data.frame(matrix(ncol =6, nrow =12))
+colnames(wtmp) <- paste0(c("Min","1st Qu","Median","Mean","3rd Qu","Max"), c(1:6))
+wtmp[1,]=summary(as.numeric(data2005089$WTMP))
+wtmp[2,]=summary(as.numeric(data2006089$WTMP))
+wtmp[3,]=summary(as.numeric(data2007089$WTMP))
+wtmp[4,]=summary(as.numeric(data2008089$WTMP))
+wtmp[5,]=summary(as.numeric(data2009089$WTMP))
+wtmp[6,]=summary(as.numeric(data2010089$WTMP))
+wtmp[7,]=summary(as.numeric(data2011089$WTMP))
+wtmp[8,]=summary(as.numeric(data2012089$WTMP))
+wtmp[9,]=summary(as.numeric(data2013089$WTMP))
+wtmp[10,]=summary(as.numeric(data2014089$WTMP))
+wtmp[11,]=summary(as.numeric(data2015089$WTMP))
+wtmp[12,]=summary(as.numeric(data2016089$WTMP))
+wtmp$year<-c(2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016)
+wtmp<-wtmp[c(7,1,2,3,4,5,6)]
+wtmp
+```
+
+
+```{r}
+#Boxplot of Sea Temperature from 2005 to 2016 at Point 46089
+ggplot(data089,aes(x=year, y=WTMP,group=year, fill=year))+geom_boxplot() +
+  labs(title="Sea Temperature from 2005 to 2016 at Point 46089",
+       y="Sea Temperature", x="Year")
+```
+Sea temperature at 46089 at year 2006 is less various than other years. 
+```{r}
+#Five Points Summary of Air Temperature From 2005 To 2016 at Point 46089
+summary(data089$ATMP)
+```
+```{r}
+#Table that shows the summary of Air Temperature for each year
+atmp<- data.frame(matrix(ncol =6, nrow =12))
+colnames(atmp) <- paste0(c("Min","1st Qu","Median","Mean","3rd Qu","Max"), c(1:6))
+atmp[1,]=summary(as.numeric(data2005089$ATMP))
+atmp[2,]=summary(as.numeric(data2006089$ATMP))
+atmp[3,]=summary(as.numeric(data2007089$ATMP))
+atmp[4,]=summary(as.numeric(data2008089$ATMP))
+atmp[5,]=summary(as.numeric(data2009089$ATMP))
+atmp[6,]=summary(as.numeric(data2010089$ATMP))
+atmp[7,]=summary(as.numeric(data2011089$ATMP))
+atmp[8,]=summary(as.numeric(data2012089$ATMP))
+atmp[9,]=summary(as.numeric(data2013089$ATMP))
+atmp[10,]=summary(as.numeric(data2014089$ATMP))
+atmp[11,]=summary(as.numeric(data2015089$ATMP))
+atmp[12,]=summary(as.numeric(data2016089$ATMP))
+atmp$year<-c(2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016)
+atmp<-atmp[c(7,1,2,3,4,5,6)]
+atmp
+```
+
+```{r}
+#Boxplot of Air Temperature from 2005 to 2016 at Point 46089
+ggplot(data089,aes(x=year, y=ATMP,group=year, fill=year))+geom_boxplot() + 
+  labs(title="Air Temperature from 2005 to 2016 at Point 46089", 
+       y="Aea Temperature", x="Year")
+```
+Year 2008 has seen the highest average temperature from 2005 to 2016
+```{r}
+#Lineplot of Air temperatue from 2005 to 2016 at Point 46089
+ggplot(data089,aes(x=as.numeric(row.names(data089)),y=as.numeric(ATMP)))+
+  geom_line()+labs(title="Air Temperature from 2007 to 2016 at Point 46089",
+                   y="Air Temperature", x="Days")
+```
+Air temperature fluctuated during the ten year period, whereas sea temperature in the next graph is more stable. 
+
+
+```{r}
+#Lineplot of Sea Temperatue from 2005 to 2016 at Point 46089
+ggplot(data089,aes(x=as.numeric(row.names(data089)),y=as.numeric(WTMP)))+
+  geom_line()+labs(title="Sea Temperature from 2007 to 2016 at Point 46089",
+                   y="Sea Temperature", x="Days")
+```
+Sea Temperature at point 46089 was stable from 2005 to 2016. 
+#EDA of Point 46002
+Data Density
+```{r}
+ggplot(data = data002, aes(x=year, y=as.numeric(WTMP))) + geom_bar(stat = "identity") +
+  labs(title="Volume of Sea Temperature Sample by Year", 
+       y="Volume of Sample", x="Year")
+```
+
+```{r}
+ggplot(data = data002, aes(x=year, y=as.numeric(ATMP))) + geom_bar(stat = "identity") +
+  labs(title="Volume of Air Temperature Sample by Year", 
+       y="Volume of Sample", x="Year")
+```
+Data in 2010 is missing. 
+```{r}
+#Table that shows the summary of Air Temperature for each year
+atmp<- data.frame(matrix(ncol =6, nrow =11))
+colnames(atmp) <- paste0(c("Min","1st Qu","Median","Mean","3rd Qu","Max"), c(1:6))
+atmp[1,]=summary(as.numeric(data2005002$ATMP))
+atmp[2,]=summary(as.numeric(data2006002$ATMP))
+atmp[3,]=summary(as.numeric(data2007002$ATMP))
+atmp[4,]=summary(as.numeric(data2008002$ATMP))
+atmp[5,]=summary(as.numeric(data2009002$ATMP))
+atmp[6,]=summary(as.numeric(data2011002$ATMP))
+atmp[7,]=summary(as.numeric(data2012002$ATMP))
+atmp[8,]=summary(as.numeric(data2013002$ATMP))
+atmp[9,]=summary(as.numeric(data2014002$ATMP))
+atmp[10,]=summary(as.numeric(data2015002$ATMP))
+atmp[11,]=summary(as.numeric(data2016002$ATMP))
+atmp$year<-c(2005,2006,2007,2008,2009,2011,2012,2013,2014,2015,2016)
+atmp<-atmp[c(7,1,2,3,4,5,6)]
+atmp
+```
+
+```{r}
+#Table that shows the summary of Sea Temperature for each year
+wtmp<- data.frame(matrix(ncol =6, nrow =11))
+colnames(wtmp) <- paste0(c("Min","1st Qu","Median","Mean","3rd Qu","Max"), c(1:6))
+wtmp[1,]=summary(as.numeric(data2005002$WTMP))
+wtmp[2,]=summary(as.numeric(data2006002$WTMP))
+wtmp[3,]=summary(as.numeric(data2007002$WTMP))
+wtmp[4,]=summary(as.numeric(data2008002$WTMP))
+wtmp[5,]=summary(as.numeric(data2009002$WTMP))
+wtmp[6,]=summary(as.numeric(data2011002$WTMP))
+wtmp[7,]=summary(as.numeric(data2012002$WTMP))
+wtmp[8,]=summary(as.numeric(data2013002$WTMP))
+wtmp[9,]=summary(as.numeric(data2014002$WTMP))
+wtmp[10,]=summary(as.numeric(data2015002$WTMP))
+wtmp[11,]=summary(as.numeric(data2016002$WTMP))
+wtmp$year<-c(2005,2006,2007,2008,2009,2011,2012,2013,2014,2015,2016)
+wtmp<-wtmp[c(7,1,2,3,4,5,6)]
+wtmp
+```
+
+```{r}
+#Boxplot of Air Temperatue from 2005 to 2016 at Point 46002
+ggplot(data002,aes(x=year, y=as.numeric(ATMP),group=year, fill=year))+geom_boxplot() +
+  labs(title="Air Temperature from 2007 to 2016 at Point 46002",
+       y="Air Temperature", x="Year")
+```
+
+```{r}
+#Boxplot of Sea Temperatue from 2005 to 2016 at Point 46002
+ggplot(data002,aes(x=year, y=as.numeric(WTMP),group=year, fill=year))+geom_boxplot() +
+  labs(title="Sea Temperature from 2007 to 2016 of Point 46002",
+       y="Sea Temperature", x="Year")
+```
+The tendency of air and sea temperature at point 46002 are similar throughout 10 years period. 
+```{r}
+#Lineplot of Air temperatue from 2005 to 2016 at Point 46002
+ggplot(data002,aes(x=as.numeric(row.names(data002)),y=as.numeric(ATMP)))+
+  geom_line()+labs(title="Air Temperature from 2007 to 2016 at Point 46002",
+                   y="Air Temperature", x="Days")
+```
+Air temperature at point 46002 fluctuate every year and slightly rises from year 2005 to 2016. 
+
+```{r}
+#Lineplot of Sea Temperatue from 2005 to 2016 at Point 46002
+ggplot(data002,aes(x=as.numeric(row.names(data002)),y=as.numeric(WTMP)))+
+  geom_line()+labs(title="Sea Temperature from 2007 to 2016 at Point 46002",
+                   y="Sea Temperature", x="Days")
+```
+Sea temperature at point 46002 fluctuate every year and slightly rises from year 2005 to 2016. 
+
+#Three Buoy Points Summary
+```{r}
+#Bind Three Points Together
+
+data028$point <- "46028"
+data002$point <- "46002"
+data089$point <- "46089"
+data_all <- rbind(data002,data028,data089)
+```
+
+```{r}
+#Comparision of Air Temperature of the Three Points from 2005 to 2016
+ggplot(data_all,aes(x=as.numeric(row.names(data_all)),y=as.numeric(ATMP),
+                    group=point,color=point))+geom_line()+
+  labs(title="Air Temperature of the Three Points from 2005 to 2016", 
+       y="Air Temperature", x="Days")
+```
+Point 46002 and 46089, which are closer to the continent, where the air temperature varies more throughout years than point 46028, which is farther away from the continent.
+
+```{r}
+#Comparision of Sea Temperature of the Three Points from 2005 to 2016
+ggplot(data_all,aes(x=as.numeric(row.names(data_all)),y=as.numeric(WTMP),
+                    group=point,color=point))+geom_line()+
+  labs(title="Sea Temperature of the Three Points from 2005 to 2016",
+       y="Air Temperature", x="Days")
+```
+Similarly, point 46002 and 46089, which are closer to the continent, where the sea temperature varies more throughout years than point 46028, which is farther away from the continent.
+
+```{r}
+#Map
+data_map<-read.csv("Data_map.csv",header=TRUE)
+map <- ggmap(get_map(location =c(-130,45),scale =1, zoom = 3, 
+                     source = "google", maptype = "roadmap")) +
+  geom_point(aes(x=Longitude,y=Latitude),                                                                    data=data_map,alpha=.5,size = 1,color="red")
+  scale_size(range=c(3,20))
+
+map
+```
