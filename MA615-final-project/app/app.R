@@ -7,7 +7,7 @@
 #the number of words showing sentiment.
 
 #The bar plot shows the most popular words which appear in tweets about alienware.It's
-#ordered from most popular to least popular.
+#ordered from most popular to least popular according to number of appearances.
 
 library(shiny)
 library(ggplot2)
