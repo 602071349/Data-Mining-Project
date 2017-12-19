@@ -21,7 +21,7 @@ ui <- fluidPage(
    navbarPage(title="plots",
       tabPanel("cluster",sidebarLayout(
         sidebarPanel(
-        numericInput('clusters','Cluster Count',4,min=2,max=6)
+        numericInput('clusters','Choose cluster count in plot',4,min=2,max=6)
         ),
         mainPanel(
           plotOutput("Plot")
