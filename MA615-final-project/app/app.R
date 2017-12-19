@@ -17,7 +17,7 @@ library(datasets)
 ui <- fluidPage(
    
    # Application title
-   titlePanel("Shinny App for Fianl Project"),
+   titlePanel("Shinny App for Final Project"),
    navbarPage(title="plots",
       tabPanel("cluster",sidebarLayout(
         sidebarPanel(
