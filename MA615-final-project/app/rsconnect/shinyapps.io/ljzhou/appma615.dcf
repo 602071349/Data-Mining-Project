@@ -1,0 +1,12 @@
+name: appma615
+title: appma615
+username:
+account: ljzhou
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 250045
+bundleId: 1141738
+url: https://ljzhou.shinyapps.io/appma615/
+when: 1513637903.96093
+asMultiple: FALSE
+asStatic: FALSE

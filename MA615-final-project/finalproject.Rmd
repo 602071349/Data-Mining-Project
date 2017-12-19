@@ -1,0 +1,190 @@
+
+
+```{r,warning=FALSE}
+#In this final project, I will explore a famous brand, Alienware, which sells gaming laptops and desktops. The main 
+#data resource are tweets about Alienware on twitter, and the main approach I adopt to explore the data is text #analysis,with tidytext package. The goal of this project is to figureout how people feel about this brand, and what 
+#words they use to describe this brand most frequently.
+
+#Import necessary libraries.
+library(devtools)
+library(twitteR)
+library(tidytext)
+library(tidyverse)
+library(stringr)
+library(scales)
+library(wordcloud)
+library(reshape2)
+library(knitr)
+library(RgoogleMaps)
+library(ggmap)
+library(datasets)
+
+#Set up twitter authentication.
+api_key <- 	"T3QByVsO2YIhCHf5IWM7LbTeI"
+api_secret <- "ozlLj87CJzJgypU4UGpxW2M4DyIImj1eaMyqZ8IZBk9fA6GW5N"
+access_token <- "4237355133-MlNm9DcqK6ahkTwQ0gYDL6bCj8xn8plrGiqGp5d"
+access_token_secret <- "lzXS9M6aJZAwEFOcU34VktJNexaE8DvGiGSlwhJgCbcNb"
+  
+
+
+setup_twitter_oauth(api_key, 
+                    api_secret, 
+                    access_token, 
+                    access_token_secret)
+
+```
+
+
+```{r,warning=FALSE}
+# Get 1000 tweets about Alienware since 2010-01-01 in English.
+tweets<-searchTwitter('Alienware',since='2010-01-01',n =1000,lang="en")
+
+# Transform tweets list into a data frame
+tweets.df <- twListToDF(tweets)
+
+#Transform tweets into lines of seperate words.
+tidy_tweets <- tweets.df %>% 
+  unnest_tokens(word,text)
+
+#Disregard not meaningful words,such as"the" before we do any analysis. 
+data(stop_words)
+
+tidy_tweets <-  tidy_tweets %>% 
+  anti_join(stop_words)
+
+#Display the most frequent words in descending order, disregard words of pure numbers.
+tidy_tweets %>%
+  filter(str_detect(word,"^[0-9]*$")==FALSE)%>%
+  count(word, sort = TRUE) %>%
+  filter(n >50) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+```
+
+
+```{r,warning=FALSE}  
+
+#Calculate the proportion of top 10 most frequent words among all words, and show it in a scatter plot.
+fre <- tidy_tweets%>%
+    count(word, sort = TRUE) %>%
+    filter(n >50) %>%
+    filter(str_detect(word,"^[0-9]*$")==FALSE)%>%
+    mutate(word = str_extract(word, "[a-z']+")) %>%
+    mutate(proportion = n / sum(n))
+ 
+fre1<-fre[1:10,]
+
+ggplot(fre1, aes(x=word, y=proportion,group=1))+geom_point()+geom_line()+scale_x_discrete(limits=fre1$word)
+```
+
+
+```{r,warning=FALSE}
+#Find words in tweets that represent joy sentiment, and show them in a table.
+nrcjoy <- get_sentiments("nrc") %>% 
+  filter(sentiment == "joy")
+
+
+joy<-tidy_tweets%>%
+  inner_join(nrcjoy) %>%
+  count(word, sort = TRUE)
+
+kable(joy,caption = "words of joy")
+
+#Find words in tweets that represent sadness sentiment, and show them in a table.
+nrcsadness<- get_sentiments("nrc") %>% 
+  filter(sentiment == "sadness")
+
+sadness<-tidy_tweets%>%
+  inner_join(nrcsadness) %>%
+  count(word, sort = TRUE)
+
+kable(sadness,caption = "words of sadness")
+```
+
+
+```{r,warning=FALSE}
+#Count how many positive words and negative words in tweets, 
+#and show top 10 frequent words of both types in seperate plots.
+tidy_tweets%>%
+  inner_join(get_sentiments("bing")) %>%
+  count(sentiment, sort = TRUE)
+  
+bing_word <- tidy_tweets %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  ungroup()
+
+bing_word %>%
+  group_by(sentiment) %>%
+  top_n(10) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(y = "Contribution to sentiment",
+       x = NULL) +
+  coord_flip()
+```
+
+
+```{r,warning=FALSE}
+#Create a wordcloud of most frequent words.
+tidy_tweets %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100))
+
+#Create a wordcloud of most frequent positive and negative words.
+tidy_tweets %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("#F8766D", "#00BFC4"),
+                   max.words = 100)
+```
+
+
+```{r,warning=FALSE}
+#Show all the words demonstrate positive or negative attitudes in a table,
+#and sort them in descending order of frequency.
+kable(bing_word,caption = " words of sentiment")
+```
+
+```{r,warning=FALSE}
+#Tweets normally don't contain geographical information, so a map of data distribution isn't applicable in this case.
+#Therefore, I use ggmap to draw a map of Alienware company's location, which is at Hammocks,Florida.
+geocode("alienware")
+qmap(location = "alienware",zoom=14)
+knitr::include_graphics('./alienware.jpg')
+```
+
+```{r,warning=FALSE}
+#Create cluster plot that defines some clusters of sentimental tweets about Alienware.X-axis represents
+#the sentiment score:higher score means a more positive attitude.Y-axis represents
+#the number of words showing sentiment.
+
+afinn <- tidy_tweets %>% 
+  inner_join(get_sentiments("afinn")) %>% 
+  group_by(id) %>% 
+  summarise(sentiment = sum(score),number=n()) %>% 
+  mutate(method = "AFINN")
+
+set.seed(7)
+dat<-afinn[,c(2,3)]
+km1 = kmeans(dat, 4, nstart=100)
+
+plot(dat, col =(km1$cluster +1) , main="K-Means result with 4 clusters", pch=20, cex=2)
+```
+
+```{r,warning=FALSE}
+#Write the data of original tweets as well as the data for shinny app in csv files.
+write.csv(dat,file="app/myData.csv",row.names = FALSE)
+write.csv(bing_word,file="app/myData1.csv")
+write.csv(tweets.df,file="tweets.csv")
+```
+```
+```
